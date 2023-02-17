@@ -28,54 +28,71 @@ public class MainLayout extends VerticalLayout {
    Button addBudgetButton = new Button("Add Budget");
    Label budgetLabel = new Label("Budget");
 
-   Grid<BudgetItems> grid = new Grid<>(BudgetItems.class);
-   Button removeItem = new Button("RemoveItem");
+   //Grid<BudgetItems> grid = new Grid<>(BudgetItems.class);
+   //Button removeItem = new Button("RemoveItem");
 
    TextField item = new TextField("Item");
    TextField cost = new TextField("Cost");
-   Button addItem = new Button("Add Item");
+   Button addItemButton = new Button("Add Item");
+
+   VerticalLayout toolbar = new VerticalLayout(item, cost, addItemButton);
 
    public MainLayout() {
       addClassName("Main-layout");
       setSizeFull();
 
-      configureGrid();
+      addBudgetButton.addClickListener(click -> budgetLabel.setText(monthlyBudget.getValue()));
+      addItemButton.addClickListener(click -> addItemButtonTasks(toolbar));
+
+      //configureGrid();
 
       add(
         getToolbar(),
-        getGrid()
+        getToolbar2()
       );
 
    }
 
    private Component getToolbar(){
-      addBudgetButton.addClickListener(click -> budgetLabel.setText(monthlyBudget.getValue()));
 
-      HorizontalLayout toolbar = new HorizontalLayout(monthlyBudget, addBudgetButton, budgetLabel, item, cost, addItem);
+     // addItem.addClickListener(click -> grid.add
+
+      HorizontalLayout toolbar = new HorizontalLayout(monthlyBudget, addBudgetButton, budgetLabel);
       return toolbar;
    }
 
-   private Component getGrid()
+   private Component getToolbar2()
    {
-      HorizontalLayout content = new HorizontalLayout(grid);
-      content.setFlexGrow(2, grid);
-      content.addClassName("content");
-      content.setSizeFull();
-      return content;
+      return toolbar;
    }
 
 
+   private void addItemButtonTasks(VerticalLayout toolbarI)
+   {
+      toolbar.addComponentAsFirst(new Label(item.getValue() + " " + cost.getValue()));
 
-   private void configureGrid() {
-      grid.addClassName("contact-grid");
-      grid.setSizeFull();
-      grid.setColumns("item", "cost");
-      grid.addComponentColumn(item -> new Button("Delete", click -> {
+      String budgetT = monthlyBudget.getValue().toString();
+      int budgetI = Integer.parseInt(budgetT);
 
-      }));
-      grid.getColumns().forEach(col -> col.setAutoWidth(true));
+      String costT = cost.getValue().toString();
+      int costI = Integer.parseInt(costT);
+
+      budgetI -= costI;
+      budgetLabel.setText(Integer.toString(budgetI));
 
    }
+
+
+//   private void configureGrid() {
+//      grid.addClassName("contact-grid");
+//      grid.setSizeFull();
+//      grid.setColumns("item", "cost");
+//      grid.addComponentColumn(item -> new Button("Delete", click -> {
+//
+//      }));
+//      grid.getColumns().forEach(col -> col.setAutoWidth(true));
+//
+//   }
 
 
 
