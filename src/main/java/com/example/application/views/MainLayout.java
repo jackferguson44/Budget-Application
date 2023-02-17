@@ -1,78 +1,83 @@
 package com.example.application.views;
 
 
-import com.example.application.components.appnav.AppNav;
-import com.example.application.components.appnav.AppNavItem;
-import com.example.application.views.about.AboutView;
-import com.example.application.views.helloworld.HelloWorldView;
-import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Header;
-import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.example.application.data.BudgetItems;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vaadin.flow.router.Route;
 
-/**
- * The main view is a top-level placeholder for other views.
- */
-public class MainLayout extends AppLayout {
 
-    private H2 viewTitle;
 
-    public MainLayout() {
-        setPrimarySection(Section.DRAWER);
-        addDrawerContent();
-        addHeaderContent();
-    }
+import java.util.Collections;
 
-    private void addHeaderContent() {
-        DrawerToggle toggle = new DrawerToggle();
-        toggle.getElement().setAttribute("aria-label", "Menu toggle");
+@PageTitle("Budget")
+@Route(value = "")
+public class MainLayout extends VerticalLayout {
 
-        viewTitle = new H2();
-        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
+//   TextField item = new TextField();
+//   TextField cost = new TextField();
 
-        addToNavbar(true, toggle, viewTitle);
-    }
+   TextField monthlyBudget = new TextField();
+   Button addBudgetButton = new Button("Add Budget");
+   Label budgetLabel = new Label("Budget");
 
-    private void addDrawerContent() {
-        H1 appName = new H1("My App");
-        appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
-        Header header = new Header(appName);
+   Grid<BudgetItems> grid = new Grid<>(BudgetItems.class);
+   Button removeItem = new Button("RemoveItem");
 
-        Scroller scroller = new Scroller(createNavigation());
+   TextField item = new TextField("Item");
+   TextField cost = new TextField("Cost");
+   Button addItem = new Button("Add Item");
 
-        addToDrawer(header, scroller, createFooter());
-    }
+   public MainLayout() {
+      addClassName("Main-layout");
+      setSizeFull();
 
-    private AppNav createNavigation() {
-        // AppNav is not yet an official component.
-        // For documentation, visit https://github.com/vaadin/vcf-nav#readme
-        AppNav nav = new AppNav();
+      configureGrid();
 
-        nav.addItem(new AppNavItem("Hello World", HelloWorldView.class, "la la-globe"));
-        nav.addItem(new AppNavItem("About", AboutView.class, "la la-file"));
+      add(
+        getToolbar(),
+        getGrid()
+      );
 
-        return nav;
-    }
+   }
 
-    private Footer createFooter() {
-        Footer layout = new Footer();
+   private Component getToolbar(){
+      addBudgetButton.addClickListener(click -> budgetLabel.setText(monthlyBudget.getValue()));
 
-        return layout;
-    }
+      HorizontalLayout toolbar = new HorizontalLayout(monthlyBudget, addBudgetButton, budgetLabel, item, cost, addItem);
+      return toolbar;
+   }
 
-    @Override
-    protected void afterNavigation() {
-        super.afterNavigation();
-        viewTitle.setText(getCurrentPageTitle());
-    }
+   private Component getGrid()
+   {
+      HorizontalLayout content = new HorizontalLayout(grid);
+      content.setFlexGrow(2, grid);
+      content.addClassName("content");
+      content.setSizeFull();
+      return content;
+   }
 
-    private String getCurrentPageTitle() {
-        PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
-        return title == null ? "" : title.value();
-    }
+
+
+   private void configureGrid() {
+      grid.addClassName("contact-grid");
+      grid.setSizeFull();
+      grid.setColumns("item", "cost");
+      grid.addComponentColumn(item -> new Button("Delete", click -> {
+
+      }));
+      grid.getColumns().forEach(col -> col.setAutoWidth(true));
+
+   }
+
+
+
+
 }
